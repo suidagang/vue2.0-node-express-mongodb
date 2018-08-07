@@ -23,10 +23,10 @@
           </div>
           <div class="goods-lists">
             <div class="simgle-goods" v-for="item in goodsList">
-              <img src="./../../static/1.jpg" class="goods-img">
+              <img :src="'/img/'+item.productImage" class="goods-img">
               <div class="goods-info">
-                <div class="goods-name">XX</div>
-                <div class="goods-price">599</div>
+                <div class="goods-name">{{item.productName}}</div>
+                <div class="goods-price">{{item.salePrice}}</div>
                 <div class="add-goods-btn">加入购物车</div>
               </div>
             </div>
@@ -76,13 +76,23 @@ export default {
       }]
     }
   },
+  mounted () {
+    this.getGoodsAjax();
+  },
   components:{
     commonHead,
     commonFooter,
     breadCrumbs
   },
   methods:{
-    
+    getGoodsAjax(){
+      let that = this;
+      this.$fetch('/goods').then(res => {
+          if(res.status == 0){
+            this.goodsList = res.result.list;
+          }
+      });
+    }
   }
 }
 </script>

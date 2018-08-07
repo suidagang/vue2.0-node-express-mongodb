@@ -8,7 +8,7 @@
         <div class="navbar-right-box">
             <span class="login">登录</span>
             <span class="logout">登出</span>
-            <i class="iconfont icon-icon_navbar_alarm icon-size"></i>
+            <i class="iconfont icon-icon_navbar_alarm icon-size" style="cursor: pointer;"></i>
         </div>
     </div>
   </div>
@@ -66,12 +66,14 @@ export default {
         margin-top: 15px;
     }
     .login{
+        cursor: pointer;
         height: 70px;
         line-height: 70px;
         width: 100px;
         text-align: center;
     }
     .logout{
+        cursor: pointer;
         height: 70px;
         line-height: 70px;
         width: 100px;

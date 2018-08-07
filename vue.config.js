@@ -1,4 +1,6 @@
 module.exports = {
+    // 基本路径
+    baseUrl: '/',
     // webpack-dev-server 相关配置
     devServer: {
      open: process.platform === 'darwin',
@@ -6,7 +8,11 @@ module.exports = {
      port: 1818,
      https: false,
      hotOnly: false,
-     proxy: null, // 设置代理
+     proxy: {
+         '/goods':{
+             target:'http://localhost:3000'
+         }
+     }, // 设置代理
      before: app => {}
     },
     // 第三方插件配置
