@@ -9,13 +9,16 @@
         <div class="goods-tool-box">
           <span>排序 : </span>
           <span class="default-btn">默认</span>
-          <span class="price-btn">价格</span>
+          <span class="price-btn price-box" v-bind:class="{'sort-up':sortFlag,'sort-down':!sortFlag}" @click="sortGoods()">
+            价格
+            <span class="iconfont icon-min price-jian"></span>
+          </span>
         </div>
         <div class="goods-list-result">
           <div class="price-lists">
             <div class="price-head">价格:</div>
-            <div class="price-single">全部</div>
-            <div class="price-single" v-for="item in priceList">
+            <div class="price-single" @click="choicePrice('all')" v-bind:class="{'cur':priceChecked=='all'}">全部</div>
+            <div class="price-single" v-for="(item,index) in priceList" v-bind:class="{'cur':priceChecked == index}" @click="choicePrice(item,index)">
               <span>{{item.start}}</span>
               <span>—</span>
               <span>{{item.end}}</span>
@@ -29,6 +32,10 @@
                 <div class="goods-price">{{item.salePrice}}</div>
                 <div class="add-goods-btn">加入购物车</div>
               </div>
+            </div>
+            <div class="clear-both"></div>
+            <div class="load-more" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="30">
+              <img src="./../../public/img/loading-svg/loading-spinning-bubbles.svg" v-show='loading'>
             </div>
           </div>
         </div>
@@ -50,30 +57,19 @@ export default {
   },
   data(){
     return {
-      priceList:[{
-        start:0,
-        end:100
-      },{
-        start:100,
-        end:500
-      },{
-        start:500,
-        end:1000
-      },{
-        start:1000,
-        end:2000
-      }],
-      goodsList:[{
-        name:1
-      },{
-        name:1
-      },{
-        name:1
-      },{
-        name:1
-      },{
-        name:1
-      }]
+      priceList:[{start:0,end:100},
+      {start:100,end:500},
+      {start:500,end:1000},
+      {start:1000,end:2000}],
+      goodsList:[],
+      sortFlag:true,
+      page:1,
+      pageSize:8,
+      busy:true,
+      priceStart:'',
+      priceEnd:'',
+      loading:false,
+      priceChecked:'all'
     }
   },
   mounted () {
@@ -82,16 +78,64 @@ export default {
   components:{
     commonHead,
     commonFooter,
-    breadCrumbs
+    breadCrumbs,
   },
   methods:{
-    getGoodsAjax(){
+    choicePrice(item,num){
       let that = this;
-      this.$fetch('/goods').then(res => {
+      if(item == 'all'){
+        that.priceChecked = 'all';
+        that.priceStart = '';
+        that.priceEnd = '';
+      }else{
+        that.priceChecked = num;
+        that.priceStart = item.start;
+        that.priceEnd = item.end;
+      };
+      that.page = 1;
+      that.getGoodsAjax();
+    },
+    getGoodsAjax(flag){
+      let that = this;
+      that.loading = true;
+      this.$fetch('/goods', {
+          sort: that.sortFlag?1:-1,
+          page:that.page,
+          pageSize:that.pageSize,
+          priceStart:that.priceStart,
+          priceEnd:that.priceEnd
+      }).then(res => {
+        that.loading = false;
           if(res.status == 0){
-            this.goodsList = res.result.list;
+            if(flag){
+              that.goodsList = that.goodsList.concat(res.result.list);
+              if(res.result.count == 0){
+                that.busy = true;
+              }else{
+                that.busy = false;
+              }
+            }else{
+              that.goodsList = res.result.list;
+              that.busy = false;
+            };
+          }else{
+            that.goodsList = [];
           }
       });
+    },
+    sortGoods(){
+      let that = this;
+      that.sortFlag = !that.sortFlag;
+      that.page = 1;
+      that.getGoodsAjax();
+    },
+    loadMore(){
+      let that = this;
+      this.page++;
+      this.busy = true;
+      setTimeout(() => {
+        that.getGoodsAjax(true);
+      }, 500);
     }
   }
 }
@@ -131,6 +175,18 @@ export default {
   .price-btn{
     cursor: pointer;
   }
+  .price-box{
+    position: relative;
+    text-align: left!important;
+  }
+  .price-jian{
+    display: block;
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    left: 6px;
+    top: 1px;
+  }
   .goods-list-result{
     width: 100%;
     display: flex;
@@ -158,7 +214,7 @@ export default {
     width: 100%;
     margin: 20px 0;
   }
-  .price-single:hover{
+  .price-single:hover,.cur{
     -webkit-transition: padding-left .3s ease-out;
     transition: padding-left .3s ease-out;
     border-left: 2px solid #ee7a23;
@@ -190,6 +246,14 @@ export default {
   .goods-img{
     display: block;
     width: 100%;
+  }
+  .clear-both::after{
+    display: block;
+    clear: both;
+    content: '';
+    width: 100%;
+    height: 0;
+    overflow: hidden;
   }
   .goods-info{
     padding: 0px 10px 10px 10px;
@@ -223,10 +287,22 @@ export default {
   .add-goods-btn:hover{
     background: #ffe5e6;
   }
-
-
-
-
+  .load-more{
+    height: 80px;
+    line-height: 80px;
+    width: 100%;
+    text-align: center;
+  }
+  .sort-up .price-jian{
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+    -webkit-transition: all .5s ease-out;
+    transition: all .5s ease-out;
+  }
+  .sort-down .price-jian{
+    -webkit-transition: all .5s ease-out;
+    transition: all .5s ease-out;
+  }
 
 
 

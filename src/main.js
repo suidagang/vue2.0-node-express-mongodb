@@ -4,6 +4,9 @@ import App from './App.vue'
 import './less/framework.less'
 import router from './router'
 import store from './store'
+//滚动加载插件
+import infiniteScroll from 'vue-infinite-scroll'
+Vue.use(infiniteScroll)
 //封装axios  ajax请求
 import axios from 'axios'
 import {post,fetch} from './axios/api'
