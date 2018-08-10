@@ -30,7 +30,7 @@
               <div class="goods-info">
                 <div class="goods-name">{{item.productName}}</div>
                 <div class="goods-price">{{item.salePrice}}</div>
-                <div class="add-goods-btn">加入购物车</div>
+                <div class="add-goods-btn" @click='addGoodsList(item)'>加入购物车</div>
               </div>
             </div>
             <div class="clear-both"></div>
@@ -81,6 +81,19 @@ export default {
     breadCrumbs,
   },
   methods:{
+    addGoodsList(item){
+      let that = this;
+      this.$post('/goods/addCart', {
+          productId:item.productId
+      }).then(res => {
+        if(res.status == '0'){
+          alert("加入成功")
+        }else{
+          alert("msg:"+res.message)
+        }
+        
+      })
+    },
     choicePrice(item,num){
       let that = this;
       if(item == 'all'){
@@ -186,6 +199,7 @@ export default {
     position: absolute;
     left: 6px;
     top: 1px;
+    color: #0000cc;
   }
   .goods-list-result{
     width: 100%;
