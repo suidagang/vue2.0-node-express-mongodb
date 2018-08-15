@@ -6,22 +6,65 @@
             <img class="head-name" src='../assets/img/china.png'/>
         </div>
         <div class="navbar-right-box">
-            <span class="login">登录</span>
-            <span class="logout">登出</span>
-            <i class="iconfont icon-icon_navbar_alarm icon-size" style="cursor: pointer;"></i>
+            <span class="login" v-show='!userName' @click="showLoginModal">登录</span>
+            <span class="login" v-show='userName'>{{userName}}</span>
+            <span class="logout" v-show='userName' @click="showLogotModal">登出</span>
+            <i class="iconfont icon-alarm_card icon-size" style="cursor: pointer;"></i>
         </div>
     </div>
+    <login-modal :mdshow="loginModalShow" @closemd = "closeLoginModal"></login-modal>
+    <logout-modal :mdshow="logoutModalShow" @closemd = "closeLogoutModal"></logout-modal>
   </div>
+  
 </template>
 
 <script>
+import loginModal from './loginModal.vue'
+import logoutModal from './logoutModal.vue'
 export default {
   name: 'commonheader',
+  data(){
+      return{
+          loginModalShow:false,
+          logoutModalShow:false
+      }
+  },
+  mounted(){
+      this.checkLogin();
+  },
+  computed:{
+    userName(){
+        return this.$store.state.userName
+    }
+  },
   props: {
-    msg: String
+    msg: String,
+  },
+  components:{
+      loginModal,
+      logoutModal
   },
   methods:{
-    
+        checkLogin(){
+            this.$fetch('/users/checkLogin').then(res => {
+                if(res.status == 0){
+                    this.$store.commit('updateUserName',res.result);
+                }
+            });
+        },
+        showLoginModal(){
+            this.loginModalShow = true;
+        },
+        closeLoginModal(){
+            this.loginModalShow = false;
+        },
+        showLogotModal(){
+            this.logoutModalShow = true;
+        },
+        closeLogoutModal(){
+            this.logoutModalShow = false;
+        }
+
   }
 }
 </script>
@@ -50,7 +93,6 @@ export default {
     .navbar-right-box{
         float: right;
         height: 70px;
-        width: 200px;
         display:flex;
     }
     .luck-yun{
@@ -69,19 +111,19 @@ export default {
         cursor: pointer;
         height: 70px;
         line-height: 70px;
-        width: 100px;
+        width: 60px;
         text-align: center;
     }
     .logout{
         cursor: pointer;
         height: 70px;
         line-height: 70px;
-        width: 100px;
+        width: 60px;
         text-align: center;
     }
     .icon-size{
         font-size: 24px;
         line-height: 70px;
-        width: 80px;
+        width: 50px;
     }
 </style>

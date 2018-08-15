@@ -11,7 +11,10 @@ module.exports = {
      proxy: {
          '/goods':{
              target:'http://localhost:3000'
-         }
+         },
+         '/users/*':{
+            target:'http://localhost:3000'
+        }
      }, // 设置代理
      before: app => {}
     },
