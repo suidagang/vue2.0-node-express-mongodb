@@ -1,7 +1,7 @@
 <template>
   <div class="common-header">
     <div class="navbar">
-        <div class="navbar-left-box">
+        <div class="navbar-left-box" @click="goHome">
             <img class="luck-yun" src='../assets/img/luckyun.png' />
             <img class="head-name" src='../assets/img/china.png'/>
         </div>
@@ -30,6 +30,7 @@ export default {
       }
   },
   mounted(){
+      console.log(this.msg);
       this.checkLogin();
   },
   computed:{
@@ -63,6 +64,9 @@ export default {
         },
         closeLogoutModal(){
             this.logoutModalShow = false;
+        },
+        goHome(){
+            this.$router.push("/")
         }
 
   }

@@ -42,7 +42,13 @@
       </div>
     </div>
     <common-footer></common-footer>
-    
+    <modal :mdshow="goCartShow" @closemd = 'closeModal'>
+      <span slot="info">加入购物车成功</span>
+      <div class="btn-box" slot="btn">
+        <div class="left-btn" @click='closeModal'>继续购物</div>
+        <div class="right-btn" @click='goCart'>查看购物车</div>
+      </div>
+    </modal>
   </div>
 </template>
 
@@ -50,17 +56,15 @@
 import commonHead from '../components/commonHead.vue';
 import commonFooter from '../components/commonFooter.vue';
 import breadCrumbs from '../components/breadCrumbs.vue';
+import modal from '../components/commonModal.vue'
 export default {
   name: 'goodsList',
-  props: {
-    msg: String
-  },
   data(){
     return {
       priceList:[{start:0,end:100},
       {start:100,end:500},
       {start:500,end:1000},
-      {start:1000,end:2000}],
+      {start:1000,end:5000}],
       goodsList:[],
       sortFlag:true,
       page:1,
@@ -69,7 +73,8 @@ export default {
       priceStart:'',
       priceEnd:'',
       loading:false,
-      priceChecked:'all'
+      priceChecked:'all',
+      goCartShow:false
     }
   },
   mounted () {
@@ -79,6 +84,7 @@ export default {
     commonHead,
     commonFooter,
     breadCrumbs,
+    modal
   },
   methods:{
     addGoodsList(item){
@@ -87,7 +93,7 @@ export default {
           productId:item.productId
       }).then(res => {
         if(res.status == '0'){
-          alert("加入成功")
+          this.goCartShow = true;
         }else{
           alert("msg:"+res.message)
         }
@@ -149,6 +155,12 @@ export default {
       setTimeout(() => {
         that.getGoodsAjax(true);
       }, 500);
+    },
+    closeModal(){
+      this.goCartShow = false;
+    },
+    goCart(){
+      this.$router.push("/goodsCart")
     }
   }
 }
@@ -317,7 +329,37 @@ export default {
     -webkit-transition: all .5s ease-out;
     transition: all .5s ease-out;
   }
-
+  .left-btn{
+    float: left;
+    width: 200px;
+    border: 1px solid #d1434a;
+    color: #d1434a;
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+    box-sizing: border-box;
+    margin-left: 30px;
+  }
+  .left-btn:hover{
+    background: #ffe5e6;
+  }
+  .right-btn{
+    float: right;
+    width: 200px;
+    border: 1px solid #d1434a;
+    background: #d1434a;
+    color: #fff;
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+    box-sizing: border-box;
+    margin-right: 30px;
+  }
+  .right-btn:hover{
+    background-color: #f16f75;
+    border-color: #f16f75;
+    color: #fff;
+  }
 
 
   .red{

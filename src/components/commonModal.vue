@@ -5,10 +5,11 @@
                 <div class="modal-close" @click='closeModal'>
                     <i class="iconfont icon-message_close position-icon"></i>
                 </div>
-                <div class="modal-content">确认退出?</div>
+                <div class="modal-content">
+                    <slot name='info'></slot>
+                </div>
                 <div class='btn-box'>
-                    <div class="cancel-btn" @click='closeModal'>取消</div>
-                    <div class="sure-btn" @click="logout">确认</div>
+                    <slot name='btn'></slot>
                 </div>
             </div>
         </transition>
@@ -31,14 +32,6 @@ export default {
         }
     },
     methods:{
-        logout(){
-            this.$fetch('/users/logout').then(res => {
-                if(res.status == 0){
-                    this.$store.commit('updateUserName','');
-                    this.$emit("closemd");
-                }
-            });
-        },
         closeModal(){
             this.$emit("closemd")
         }
@@ -83,34 +76,10 @@ export default {
         text-align: center;
     }
     .btn-box{
-        height: 28px;
+        min-height: 28px;
         width: 100%;
         overflow: hidden;
         margin-bottom: 30px;
-    }
-    .cancel-btn{
-        float: left;
-        height: 28px;
-        line-height: 28px;
-        min-width: 50px;
-        background: #32bced;
-        margin-left: 170px;
-        text-align: center;
-        color: #fff;
-        border-radius: 2px;
-        cursor: pointer;
-    }
-    .sure-btn{
-        float: left;
-        height: 28px;
-        line-height: 28px;
-        min-width: 50px;
-        background: #32bced;
-        margin-left: 50px;
-        text-align: center;
-        color: #fff;
-        border-radius: 2px;
-        cursor: pointer;
     }
     .fade-enter-active, .fade-leave-active {
         transition: all .3s ease-in;
