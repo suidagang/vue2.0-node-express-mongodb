@@ -42,7 +42,7 @@
             }
         },
         created(){
-            console.log(this.value);
+            
         },
         mounted(){
             this.test();

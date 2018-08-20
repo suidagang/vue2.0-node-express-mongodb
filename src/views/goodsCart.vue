@@ -16,7 +16,7 @@
       <ul class="cart-table-body">
         <li v-for='item in cartList'>
           <div class="table-body-name">
-            <com-checkbox class="check-box-cart" v-model="item.checked" :value='item.checked'  @changem='editCart(item)'></com-checkbox>
+            <com-checkbox class="check-box-cart" v-model="item.checked" :value='item.checked'  @changem='editCartGoods(item)'></com-checkbox>
             <img class="img-cart" :src="'/img/'+item.productImage" />
             <span class="cart-name">{{item.productName}}</span>
           </div>
@@ -25,16 +25,16 @@
           </div>
           <div class="table-body-num">
             <div class="cart-num-box">
-              <div class="cart-minu">-</div>
+              <div class="cart-minu" @click="editCartGoods(item,'minu')">-</div>
               <div class="cart-num">{{item.productNum}}</div>
-              <div class="cart-add">+</div>
+              <div class="cart-add" @click="editCartGoods(item,'add')">+</div>
             </div>
           </div>
           <div class="table-body-total">
             {{(item.productNum*item.salePrice) | currency('￥')}}
           </div>
           <div class="table-body-del">
-            <i class="iconfont icon-delete1 icon-size" style="cursor: pointer;"></i>
+            <i class="iconfont icon-delete1 icon-size" style="cursor: pointer;" @click="delCart(item)"></i>
           </div>
         </li>
       </ul>
@@ -42,7 +42,7 @@
         <div class="footer-left">
           <com-checkbox class="check-box-cart-all" v-model="checkBox" :value='checkBox' @changem='choiceAll()' >全选</com-checkbox>
           <span class="footer-left-total">总金额:
-            <span>169</span>
+            <span>{{totalPrice}}</span>
           </span>
         </div>
         <div class="footer-btn" @click="search">查看</div>
@@ -72,7 +72,7 @@ export default {
     currency:currency
   },
   mounted () {
-    this.getCartList()
+    this.getCartList();
   },
   components:{
     commonHead,
@@ -81,35 +81,108 @@ export default {
     comRadio,
     comCheckbox
   },
+  computed:{
+    totalPrice(){
+      var totalMoney = 0;
+      this.cartList.forEach((item)=>{
+        if(item.checked == '1'){
+          totalMoney += parseFloat(item.productNum) * parseFloat(item.salePrice);
+        }
+      });
+      return totalMoney;
+    },
+    checkAllFlag(){
+      let num = 0;
+      this.cartList.forEach((item)=>{
+        if(item.checked == '1'){
+          num++
+        }
+      });
+      console.log(num);
+      if(num == this.cartList.length){
+        return true;
+      }else{
+        return false;
+      }
+    }
+  },
   methods:{
     search(){
-      
-      
+    },
+    delCart(item){
+      this.$post('/users/delCart', {
+          productId:item.productId
+      }).then(res => {
+        if(res.status == '0'){
+          this.getCartList();
+        }else{
+          alert("msg:"+res.message)
+        }
+        
+      })
+    },
+    editCartGoods(item,flag){
+      //减数量的情况
+      if(flag == 'minu'){
+        if(item.productNum <=1){
+          return;
+        }else{
+          item.productNum--;
+        }
+      }else if(flag == 'add'){//加数量的情况
+        item.productNum++;
+      }else{
+        item.checked = item.checked == "1"?"0":"1";
+      };
+      this.$post('/users/editCart', {
+          productId:item.productId,
+          productNum:item.productNum,
+          checked:item.checked
+      }).then(res => {
+        if(res.status == '0'){
+          this.getCartList();
+        }else{
+          alert("msg:"+res.message)
+        }
+        
+      })
     },
     getCartList(){
       this.$fetch('/users/cartList').then(res => {
           if(res.status == 0){
             this.cartList = res.result;
+            if(this.checkAllFlag){
+              this.checkBox = 1
+            }else{
+              this.checkBox = 0;
+            };
           }
       });
-    },
-    editCart(item){
-      item.checked = item.checked == "1"?"0":"1";
     },
     choiceAll(){
       let that = this;
       this.checkBox = this.checkBox == '1'?"0":"1";
-      this.$nextTick(() => {
-          if(that.checkBox == 1){
-            that.cartList.forEach(item=>{
-              item.checked = 1;
-            });
-          }else{
-            that.cartList.forEach(item=>{
-              item.checked = 0;
-            })
-          };
+      this.$post('/users/checkAll', {
+          checkAll:this.checkBox
+      }).then(res => {
+        if(res.status == '0'){
+          this.getCartList();
+        }else{
+          alert("msg:"+res.message)
+        }
+        
       })
+      // this.$nextTick(() => {
+      //     if(that.checkBox == 1){
+      //       that.cartList.forEach(item=>{
+      //         item.checked = 1;
+      //       });
+      //     }else{
+      //       that.cartList.forEach(item=>{
+      //         item.checked = 0;
+      //       })
+      //     };
+      // })
     }
   }
 }

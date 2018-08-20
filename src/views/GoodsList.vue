@@ -117,7 +117,7 @@ export default {
     getGoodsAjax(flag){
       let that = this;
       that.loading = true;
-      this.$fetch('/goods', {
+      this.$fetch('/goods/list', {
           sort: that.sortFlag?1:-1,
           page:that.page,
           pageSize:that.pageSize,
