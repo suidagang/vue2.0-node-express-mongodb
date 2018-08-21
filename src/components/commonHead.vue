@@ -9,7 +9,8 @@
             <span class="login" v-show='!userName' @click="showLoginModal">登录</span>
             <span class="login" v-show='userName'>{{userName}}</span>
             <span class="logout" v-show='userName' @click="showLogotModal">登出</span>
-            <i class="iconfont icon-alarm_card icon-size" style="cursor: pointer;"></i>
+            <span class="red-num" v-if="userName">{{cartCount}}</span>
+            <i class="iconfont icon-alarm_card icon-size" style="cursor: pointer;" @click = "goCart"></i>
         </div>
     </div>
     <login-modal :mdshow="loginModalShow" @closemd = "closeLoginModal"></login-modal>
@@ -31,10 +32,14 @@ export default {
   },
   mounted(){
       this.checkLogin();
+      this.getCartCount();
   },
   computed:{
     userName(){
         return this.$store.state.userName
+    },
+    cartCount(){
+        return this.$store.state.cartCount
     }
   },
   props: {
@@ -52,11 +57,22 @@ export default {
                 }
             });
         },
+        getCartCount(){
+            this.$fetch('/users/getCartCount').then(res => {
+                if(res.status == 0){
+                    this.$store.commit("updateCartCount",res.result);
+                }
+            });
+        },
         showLoginModal(){
             this.loginModalShow = true;
         },
-        closeLoginModal(){
+        closeLoginModal(flag){
             this.loginModalShow = false;
+            //如果登录成功
+            if(flag){
+                this.getCartCount();
+            }
         },
         showLogotModal(){
             this.logoutModalShow = true;
@@ -66,6 +82,9 @@ export default {
         },
         goHome(){
             this.$router.push("/")
+        },
+        goCart(){
+            this.$router.push("/goodsCart")
         }
 
   }
@@ -94,6 +113,7 @@ export default {
         overflow: hidden;
     }
     .navbar-right-box{
+        position: relative;
         float: right;
         height: 70px;
         display:flex;
@@ -128,5 +148,18 @@ export default {
         font-size: 24px;
         line-height: 70px;
         width: 50px;
+    }
+    .red-num{
+        position: absolute;
+        display: block;
+        top: 15px;
+        right: 20px;
+        height: 20px;
+        width: 20px;
+        line-height: 20px;
+        text-align: center;
+        border-radius: 10px;
+        color: white;
+    background-color: #eb767d;
     }
 </style>

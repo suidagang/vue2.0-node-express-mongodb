@@ -51,7 +51,7 @@ export default {
     .modal-box{
         position: fixed;
         z-index: 999;
-        width: 500px;
+        width: 380px;
         height: auto;
         background: #fff;
         top: 50%;
@@ -94,7 +94,7 @@ export default {
         line-height: 28px;
         min-width: 50px;
         background: #32bced;
-        margin-left: 170px;
+        margin-left: 110px;
         text-align: center;
         color: #fff;
         border-radius: 2px;

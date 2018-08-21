@@ -9,7 +9,7 @@
                     <div class="modal-header">
                         <div>登录</div>
                     </div>
-                    <div class="login-err" v-if='loginErr'></div>
+                    <div class="login-err" v-if='loginErr'>{{errorText}}</div>
                     <div class="user-name-box">
                         <span class="iconfont icon-icon_user position-icon"></span>
                         <input type="text" class="input-login" v-model='userName' placeholder="账号" />
@@ -37,6 +37,9 @@ export default {
             userPwd:'123456',
         }
     },
+    mounted(){
+        
+    },
     props: {
         mdshow:{
             type:Boolean,
@@ -45,6 +48,7 @@ export default {
     },
     methods:{
         closeModal(){
+            this.loginErr = false;
             this.$emit("closemd");
         },
         login(){
@@ -54,9 +58,11 @@ export default {
             }).then(res => {
                 if(res.status == '0'){
                     this.$store.commit('updateUserName',res.result.userName);
-                    this.$emit("closemd");
+                    this.loginErr = false;
+                    this.$emit("closemd",true);
                 }else{
-                    alert("msg:"+res.message)
+                    this.loginErr = true;
+                    this.errorText = res.msg;
                 }
             })
         }
@@ -91,6 +97,8 @@ export default {
         min-height: 30px;
         line-height: 20px;
         word-break: break-all;
+        color: #d1434a;
+        font-size: 14px;
     }
     .modal-overlay{
         position: fixed;

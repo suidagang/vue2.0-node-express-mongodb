@@ -1,7 +1,7 @@
 <template>
   <div class="bread-crumbs">
     <div class="bread-crumbs-content">
-        <span>首页</span>
+        <span @click="goHome">首页</span>
         <span>/</span>
         <slot name="secondmenu"></slot>
     </div>
@@ -15,7 +15,10 @@ export default {
     msg: String
   },
   methods:{
-    
+    goHome(){
+        this.$router.push("/")
+    }
+
   }
 }
 </script>

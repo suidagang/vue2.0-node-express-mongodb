@@ -1,9 +1,10 @@
 import axios from 'axios';
+import router from './../router'
 //处理post请求请求参数为From Data的情况
 import qs from 'qs';
-//import { Message } from 'element-ui';
+import { MessageBox  } from 'element-ui';
 
-axios.defaults.timeout = 5000;
+axios.defaults.timeout = 20000;
 //axios.defaults.baseURL ='http://iot.ideyee.com';
 // axios.defaults.baseURL ='http://localhost:3000';
 
@@ -11,13 +12,11 @@ axios.defaults.timeout = 5000;
 axios.interceptors.request.use(
     config => {
         // const token = getCookie('名称');注意使用的时候需要引入cookie方法，推荐js-cookie
+        // const token = this.$cookie.get('userId');
         config.data = config.data;
         config.headers = {
             'Content-Type':'application/x-www-form-urlencoded'
-        }
-        // if(token){
-        //   config.params = {'token':token}
-        // }
+        };
         return config;
     },
     error => {
@@ -26,15 +25,30 @@ axios.interceptors.request.use(
 );
 
 
-//http response 拦截器(请求成功的统一处理，比如后台返回code=1 就表示没登录要统一跳转登录页)
+//http response 拦截器(请求成功的统一处理，比如后台返回code=10001 就表示没登录跳转商品列表页面)
 axios.interceptors.response.use(
     response => {
-        if(response.data.Code ==1){
-            router.push({
-                path:"/login",
-                querry:{redirect:router.currentRoute.fullPath}//从哪个页面跳转
-            })
-        }
+        if(response.data.status == '10001'){
+            console.log("拦截到没登录");
+            MessageBox('未登录', '温馨提示', {
+                confirmButtonText: '确定',
+            }).then(()=>{
+                console.log("确定按钮后的操作");
+                router.push({
+                    path: '/',
+                    query: {redirect: router.currentRoute.fullPath}
+                });
+            }).catch((err)=>{
+                console.log(err);
+            });
+        }else if(response.data.status != '0'){
+            MessageBox(response.data.msg, '温馨提示', {
+                confirmButtonText: '确定',
+                callback: action => {
+                
+                }
+            });
+        };
         return response;
     },
     error => {

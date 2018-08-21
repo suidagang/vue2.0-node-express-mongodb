@@ -8,7 +8,7 @@
       <div class="goods-list-box">
         <div class="goods-tool-box">
           <span>排序 : </span>
-          <span class="default-btn">默认</span>
+          <span class="default-btn" @click="test">默认</span>
           <span class="price-btn price-box" v-bind:class="{'sort-up':sortFlag,'sort-down':!sortFlag}" @click="sortGoods()">
             价格
             <span class="iconfont icon-min price-jian"></span>
@@ -87,6 +87,12 @@ export default {
     modal
   },
   methods:{
+    test(){
+      
+    },
+    StayWhereYouAre(){
+      console.log("确认");
+    },
     addGoodsList(item){
       let that = this;
       this.$post('/goods/addCart', {
@@ -94,8 +100,6 @@ export default {
       }).then(res => {
         if(res.status == '0'){
           this.goCartShow = true;
-        }else{
-          alert("msg:"+res.message)
         }
         
       })

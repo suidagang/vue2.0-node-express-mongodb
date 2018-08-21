@@ -5,11 +5,15 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-      userName:''
+      userName:'',
+      cartCount:0
   },
   mutations: {
       updateUserName(state,userName){
           state.userName = userName;
+      },
+      updateCartCount(state,cartCount){
+        state.cartCount = parseFloat(cartCount);
       }
   },
   actions: {

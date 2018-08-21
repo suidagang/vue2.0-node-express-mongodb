@@ -4,6 +4,18 @@
   </div>
 </template>
 
+<script>
+export default {
+  name: 'app',
+  mounted(){
+    this.$cookie.set('name',"suigang",7);
+  },
+  methods:{
+    
+  }
+}
+</script>
+
 <style lang="less">
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

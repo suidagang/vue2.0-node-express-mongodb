@@ -42,7 +42,7 @@
         <div class="footer-left">
           <com-checkbox class="check-box-cart-all" v-model="checkBox" :value='checkBox' @changem='choiceAll()' >全选</com-checkbox>
           <span class="footer-left-total">总金额:
-            <span>{{totalPrice}}</span>
+            <span>{{totalPrice |currency('￥') }}</span>
           </span>
         </div>
         <div class="footer-btn" @click="search">查看</div>
@@ -98,7 +98,6 @@ export default {
           num++
         }
       });
-      console.log(num);
       if(num == this.cartList.length){
         return true;
       }else{
@@ -108,6 +107,7 @@ export default {
   },
   methods:{
     search(){
+      this.$router.push("/goodsAddress")
     },
     delCart(item){
       this.$post('/users/delCart', {
@@ -115,10 +115,7 @@ export default {
       }).then(res => {
         if(res.status == '0'){
           this.getCartList();
-        }else{
-          alert("msg:"+res.message)
         }
-        
       })
     },
     editCartGoods(item,flag){
@@ -141,16 +138,18 @@ export default {
       }).then(res => {
         if(res.status == '0'){
           this.getCartList();
-        }else{
-          alert("msg:"+res.message)
         }
-        
       })
     },
     getCartList(){
       this.$fetch('/users/cartList').then(res => {
           if(res.status == 0){
             this.cartList = res.result;
+            var count = 0;
+            this.cartList.forEach((item)=>{
+              count += parseFloat(item.productNum);
+            });
+            this.$store.commit("updateCartCount",count);
             if(this.checkAllFlag){
               this.checkBox = 1
             }else{
@@ -167,10 +166,7 @@ export default {
       }).then(res => {
         if(res.status == '0'){
           this.getCartList();
-        }else{
-          alert("msg:"+res.message)
         }
-        
       })
       // this.$nextTick(() => {
       //     if(that.checkBox == 1){
@@ -381,5 +377,8 @@ export default {
         font-size: 18px;
         color: #d1434a;
       }
+    }
+    .red{
+      color: #d1434a;
     }
 </style>
